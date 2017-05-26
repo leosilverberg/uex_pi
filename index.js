@@ -34,6 +34,7 @@ io.on('connection', function(socket) {
   });
  
   socket.on('start-stream', function() {
+    if (proc) proc.kill();
     startStreaming(io);
   });
  
