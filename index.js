@@ -1,3 +1,5 @@
+'use strict';
+
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -7,9 +9,12 @@ var path = require('path');
  
 var spawn = require('child_process').spawn;
 var proc;
- 
+
+var PythonShell = require('python-shell');
+var pShell = new PythonShell('uex_controller.py');
+
 app.use('/', express.static(path.join(__dirname, 'stream')));
- 
+app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
  
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
@@ -34,9 +39,30 @@ io.on('connection', function(socket) {
   });
  
   socket.on('start-stream', function() {
-    if (proc) proc.kill();
     startStreaming(io);
   });
+  
+  socket.on('test-move', function(){
+	testMove();
+  });
+  
+  socket.on('up-move', function(){
+	console.log("up node");
+	step('up');
+  });
+  
+  socket.on('down-move', function(){
+	step('down');
+  });
+  
+  socket.on('left-move', function(){
+	step('left');
+  });
+  
+  socket.on('right-move', function(){
+	step('right');
+  });
+  
  
 });
  
@@ -59,7 +85,7 @@ function startStreaming(io) {
     return;
   }
  
-  var args = ["-w", "640 ", "-h", "480", "-o", "./stream/image_stream.jpg", "-t", "999999999", "-tl", "70"];
+  var args = ["-w", "1920", "-h", "1080", "-o", "./stream/image_stream.jpg", "-t", "999999999", "-tl", "70"];
   proc = spawn('raspistill', args);
  
   console.log('Watching for changes...');
@@ -70,4 +96,17 @@ function startStreaming(io) {
     io.sockets.emit('liveStream', 'image_stream.jpg?_t=' + (Math.random() * 100000));
   })
  
+}
+
+function testMove() {
+	PythonShell.run('test.py', function(err){
+		if(err) throw err;
+		console.log('done');
+	})
+}
+
+
+function step(dir){
+	console.log("sending command");
+	pShell.send(dir);
 }

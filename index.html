@@ -24,18 +24,8 @@
   <!-- Bootstrap JavaScript -->
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-  var socket = io();
-  socket.on('liveStream', function(url) {
-    $('#stream').attr('src', url);
-    $('.start').hide();
-  });
+  <script src="scripts/control.js"></script>
  
-  function startStream() {
-    socket.emit('start-stream');
-    $('.start').hide();
-  }
-  </script>
 </head>
  
 <body class="container">
@@ -46,6 +36,18 @@
   <hr>
  
   <button type="button" id="" class="btn btn-info start" onclick="startStream()">Start Camera</button>
+  <br>
+  <br>
+  <br>
+  <button type="button" id="" class="btn btn-info start" onclick="upMove()">&uarr;UP&uarr;</button>
+  <br>
+  <br>
+  <button type="button" id="" class="btn btn-info start" onclick="leftMove()">&#8592;LEFT</button>
+  <button type="button" id="" class="btn btn-info start" onclick="rightMove()">RIGHT&#8594;</button>
+  <br>
+  <br>
+  
+  <button type="button" id="" class="btn btn-info start" onclick="downMove()">&darr;DOWN&darr;</button>
  
   <div class="row">
     <img src="" id="stream">
