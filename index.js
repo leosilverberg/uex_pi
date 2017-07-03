@@ -11,7 +11,8 @@ var spawn = require('child_process').spawn;
 var proc;
 
 var PythonShell = require('python-shell');
-var pShell = new PythonShell('uex_controller.py');
+var pShell = new PythonShell('uex_controller.py', {mode:'text',scriptPath:"./", pythonOptions: ['-u']});
+console.log("Started uex_controller.py");
 
 app.use('/', express.static(path.join(__dirname, 'stream')));
 app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
@@ -53,6 +54,7 @@ io.on('connection', function(socket) {
   
   socket.on('down-move', function(){
 	step('down');
+
   });
   
   socket.on('left-move', function(){
@@ -69,6 +71,14 @@ io.on('connection', function(socket) {
 http.listen(3000, function() {
   console.log('listening on *:3000');
 });
+
+pShell.on('message', function (message){
+	if(message > ""){
+		console.log("[js] got message: " +message);
+	}
+	
+});
+
  
 function stopStreaming() {
   if (Object.keys(sockets).length == 0) {
@@ -98,15 +108,10 @@ function startStreaming(io) {
  
 }
 
-function testMove() {
-	PythonShell.run('test.py', function(err){
-		if(err) throw err;
-		console.log('done');
-	})
-}
-
 
 function step(dir){
 	console.log("sending command");
 	pShell.send(dir);
 }
+
+

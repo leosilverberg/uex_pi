@@ -4,6 +4,8 @@ from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor, Adafruit_Step
 import time
 import atexit
 import sys
+import curses
+
 
 #create motor hat
 mh = Adafruit_MotorHAT()
@@ -19,19 +21,36 @@ def turnOffMotors():
 atexit.register(turnOffMotors)
 
 #setting up stepper1 200 steps/rev
-myStepper = mh.getStepper(200,1)
-myStepper2 = mh.getStepper(200,2)
-myStepper.setSpeed(1000)
-myStepper2.setSpeed(20)
+decStepper = mh.getStepper(200,1)
+raStepper = mh.getStepper(200,2)
+decStepper.setSpeed(20)
+raStepper.setSpeed(20)
 
-myStepper2.step(20,Adafruit_MotorHAT.FORWARD, Adafruit_MotorHAT.INTERLEAVE)
+print("booting uex_controller")
 
 
 while(1) :
-    print "reading"
-    data = sys.stdin.readline();
-    if data == "up/n" :
-        myStepper2.step(20,Adafruit_MotorHAT.FORWARD, Adafruit_MotorHAT.INTERLEAVE)
+    
+    data = sys.stdin.readline()
+	
+    if data > "" :
+		dataString = str(data)
+		print "[py] got something: %r" % (dataString)
+		
+		if dataString == "up\n" :
+			print "[py] got up"
+			raStepper.step(1,Adafruit_MotorHAT.BACKWARD, Adafruit_MotorHAT.MICROSTEP)
+		elif dataString == "down\n" :
+			print "[py] got down"
+			raStepper.step(1,Adafruit_MotorHAT.FORWARD, Adafruit_MotorHAT.MICROSTEP)
+		elif dataString == "left\n" :
+			print "[py] got left"
+			decStepper.step(1,Adafruit_MotorHAT.FORWARD, Adafruit_MotorHAT.MICROSTEP)
+		elif dataString == "right\n" :
+			print "[py] got right"
+			decStepper.step(1,Adafruit_MotorHAT.BACKWARD, Adafruit_MotorHAT.MICROSTEP)
+			
+        #myStepper2.step(20,Adafruit_MotorHAT.FORWARD, Adafruit_MotorHAT.INTERLEAVE)
 
 
 
